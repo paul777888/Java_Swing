@@ -1,0 +1,1816 @@
+
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.RenderingHints;
+import java.awt.Toolkit;
+import java.awt.event.KeyEvent;
+import java.awt.event.WindowEvent;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.activation.DataHandler;
+import javax.activation.DataSource;
+import javax.activation.FileDataSource;
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import net.proteanit.sql.DbUtils;
+import org.ibex.nestedvm.util.Seekable;
+import javax.mail.*;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
+import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
+
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+/**
+ *
+ * @author paulwu
+ */
+public class EasyStatMain extends javax.swing.JFrame {
+
+    private Connection connection = null;
+    private PreparedStatement pst = null;
+    private ResultSet resultSet = null;
+    private byte[] personImg = null;
+    private String filePath = "";
+    /**
+     * Creates new form EasyStatMain
+     */
+    public EasyStatMain() {
+        initComponents();
+        init();
+        connection = JavaDbConnect.dbConnect();
+        updateStudentInfoTbl();
+        updateStdntHrtInfo();
+        currentDate();
+        updateDoc();
+    }
+    
+     public void init(){
+        setLocationRelativeTo(null);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setResizable(false);
+    }
+     
+     public void close(){
+        WindowEvent winClosingEvent = new WindowEvent(this, WindowEvent.WINDOW_CLOSING);
+        Toolkit.getDefaultToolkit().getSystemEventQueue().postEvent(winClosingEvent);
+    }
+     
+     //method for table update
+     private void updateStudentInfoTbl(){
+        String sql = "select Student_id,First_name, Last_name, Department, " 
+                     +"Series, Age, Height, Weight, Gender, Blood from Student_Info";
+        try {
+            pst = connection.prepareStatement(sql);
+            resultSet = pst.executeQuery();
+            tblStudentInfo.setModel(DbUtils.resultSetToTableModel(resultSet));
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(rootPane, ex);
+        } 
+     }
+     
+     private void updateStdntHrtInfo(){
+        String sql = "select Student_id,First_name from Student_Info";
+        try {
+            pst = connection.prepareStatement(sql);
+            resultSet = pst.executeQuery();
+            tblStdntHrInfor.setModel(DbUtils.resultSetToTableModel(resultSet));
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(rootPane, ex);
+        } 
+     }
+     
+     private void updateDoc(){
+        String sql = "select * from Doc_table";
+        try {
+            pst = connection.prepareStatement(sql);
+            resultSet = pst.executeQuery();
+            tblDoc.setModel(DbUtils.resultSetToTableModel(resultSet));
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(rootPane, ex);
+        } 
+     }
+
+    private void getValue() {
+        try {
+            txtStdntID.setText(resultSet.getString("Student_id"));
+            txtStdntFN.setText(resultSet.getString("First_name"));
+            txtStdntLN.setText(resultSet.getString("Last_name"));
+            txtStdntDpt.setText(resultSet.getString("Department"));
+            txtStdntSi.setText(resultSet.getString("Series"));
+            txtStdntAge.setText(resultSet.getString("Age"));
+            txtStdntHeit.setText(resultSet.getString("Height"));
+            txtStdntWeit.setText(resultSet.getString("Weight"));
+            comboStdntGend.setSelectedItem(resultSet.getString("Gender"));
+            txtStdntBld.setText(resultSet.getString("Blood"));
+            
+            byte[] imageData = resultSet.getBytes("Photo");
+            ImageIcon format = new ImageIcon(scaledImage(imageData,labelImage.getWidth(),labelImage.getHeight()));
+            labelImage.setIcon(format);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(rootPane, e);
+        }      
+    }
+
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        jMenuItem1 = new javax.swing.JMenuItem();
+        jToolBar1 = new javax.swing.JToolBar();
+        signOut = new javax.swing.JButton();
+        btnHelp1 = new javax.swing.JButton();
+        jPanel1 = new javax.swing.JPanel();
+        jTabbedPane1 = new javax.swing.JTabbedPane();
+        jPanel2 = new javax.swing.JPanel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        tblStudentInfo = new javax.swing.JTable();
+        jPanel3 = new javax.swing.JPanel();
+        jPanel4 = new javax.swing.JPanel();
+        jPanel5 = new javax.swing.JPanel();
+        jPanel12 = new javax.swing.JPanel();
+        jScrollPane4 = new javax.swing.JScrollPane();
+        tblDoc = new javax.swing.JTable();
+        txtDocment = new javax.swing.JTextField();
+        btnDocAttch = new javax.swing.JButton();
+        btnDocAdd = new javax.swing.JButton();
+        btnDocDelete = new javax.swing.JButton();
+        btnDocClear = new javax.swing.JButton();
+        txtDocId = new javax.swing.JTextField();
+        txtDocSdntId = new javax.swing.JTextField();
+        txtDocName = new javax.swing.JTextField();
+        jLabel17 = new javax.swing.JLabel();
+        jLabel18 = new javax.swing.JLabel();
+        jLabel19 = new javax.swing.JLabel();
+        jPanel6 = new javax.swing.JPanel();
+        jPanel8 = new javax.swing.JPanel();
+        jLabel12 = new javax.swing.JLabel();
+        txtFromEmail = new javax.swing.JTextField();
+        jLabel13 = new javax.swing.JLabel();
+        jLabel14 = new javax.swing.JLabel();
+        txtToEmail = new javax.swing.JTextField();
+        txtSubEmail = new javax.swing.JTextField();
+        jLabel15 = new javax.swing.JLabel();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        txtAreaEmail = new javax.swing.JTextArea();
+        txtAttachFile = new javax.swing.JTextField();
+        btnAttch = new javax.swing.JButton();
+        txtAttchName = new javax.swing.JTextField();
+        jLabel16 = new javax.swing.JLabel();
+        btnSendEmail = new javax.swing.JButton();
+        txtPassEmail = new javax.swing.JPasswordField();
+        jPanel7 = new javax.swing.JPanel();
+        jLabel11 = new javax.swing.JLabel();
+        txtSearch = new javax.swing.JTextField();
+        btnSearch = new javax.swing.JButton();
+        jPanel11 = new javax.swing.JPanel();
+        btnAdd = new javax.swing.JButton();
+        btnEdit = new javax.swing.JButton();
+        btnDelete = new javax.swing.JButton();
+        btnClear = new javax.swing.JButton();
+        stdntInfoPanel = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
+        txtStdntID = new javax.swing.JTextField();
+        jLabel2 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
+        txtStdntFN = new javax.swing.JTextField();
+        txtStdntLN = new javax.swing.JTextField();
+        txtStdntDpt = new javax.swing.JTextField();
+        txtStdntSi = new javax.swing.JTextField();
+        jLabel6 = new javax.swing.JLabel();
+        txtStdntAge = new javax.swing.JTextField();
+        jLabel7 = new javax.swing.JLabel();
+        txtStdntHeit = new javax.swing.JTextField();
+        jLabel8 = new javax.swing.JLabel();
+        txtStdntWeit = new javax.swing.JTextField();
+        jLabel9 = new javax.swing.JLabel();
+        jLabel10 = new javax.swing.JLabel();
+        txtStdntBld = new javax.swing.JTextField();
+        comboStdntGend = new javax.swing.JComboBox<>();
+        jPanel9 = new javax.swing.JPanel();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        tblStdntHrInfor = new javax.swing.JTable();
+        jPanel10 = new javax.swing.JPanel();
+        txtImageUpload = new javax.swing.JTextField();
+        btnImageUpload = new javax.swing.JButton();
+        labelImage = new javax.swing.JLabel();
+        btnSaveUpload = new javax.swing.JButton();
+        jMenuBar1 = new javax.swing.JMenuBar();
+        jMenu1 = new javax.swing.JMenu();
+        mItClose = new javax.swing.JMenuItem();
+        exit = new javax.swing.JMenuItem();
+        panelStdnInfo = new javax.swing.JMenu();
+        jMenuItem2 = new javax.swing.JMenuItem();
+        jMenu3 = new javax.swing.JMenu();
+        itemHelp = new javax.swing.JMenuItem();
+        itemWebHelp = new javax.swing.JMenuItem();
+        jMenu4 = new javax.swing.JMenu();
+        menuDate = new javax.swing.JMenu();
+        menuTime = new javax.swing.JMenu();
+
+        jMenuItem1.setText("jMenuItem1");
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        jToolBar1.setRollover(true);
+
+        signOut.setFont(new java.awt.Font("Lucida Grande", 0, 8)); // NOI18N
+        signOut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/sign_out.png"))); // NOI18N
+        signOut.setText("Sign Out");
+        signOut.setFocusable(false);
+        signOut.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        signOut.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        signOut.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                signOutActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(signOut);
+
+        btnHelp1.setFont(new java.awt.Font("Lucida Grande", 0, 8)); // NOI18N
+        btnHelp1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/information.png"))); // NOI18N
+        btnHelp1.setText("Help");
+        btnHelp1.setFocusable(false);
+        btnHelp1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btnHelp1.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btnHelp1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnHelp1ActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(btnHelp1);
+
+        jPanel1.setBackground(new java.awt.Color(153, 153, 255));
+        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Action Panel", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Lucida Grande", 3, 12), new java.awt.Color(51, 0, 51))); // NOI18N
+
+        jTabbedPane1.setFont(new java.awt.Font("Lucida Grande", 1, 14)); // NOI18N
+
+        tblStudentInfo.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
+        tblStudentInfo.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        tblStudentInfo.setToolTipText("");
+        tblStudentInfo.setShowGrid(false);
+        tblStudentInfo.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tblStudentInfoMouseClicked(evt);
+            }
+        });
+        tblStudentInfo.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                tblStudentInfoKeyReleased(evt);
+            }
+        });
+        jScrollPane1.setViewportView(tblStudentInfo);
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 783, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(221, Short.MAX_VALUE))
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 166, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 159, Short.MAX_VALUE))
+        );
+
+        jTabbedPane1.addTab("Data Table", jPanel2);
+
+        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
+        jPanel3.setLayout(jPanel3Layout);
+        jPanel3Layout.setHorizontalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 1010, Short.MAX_VALUE)
+        );
+        jPanel3Layout.setVerticalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 325, Short.MAX_VALUE)
+        );
+
+        jTabbedPane1.addTab("Chart", jPanel3);
+
+        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
+        jPanel4.setLayout(jPanel4Layout);
+        jPanel4Layout.setHorizontalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 1010, Short.MAX_VALUE)
+        );
+        jPanel4Layout.setVerticalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 325, Short.MAX_VALUE)
+        );
+
+        jTabbedPane1.addTab("Statistics", jPanel4);
+
+        jPanel12.setBackground(new java.awt.Color(204, 204, 255));
+        jPanel12.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        tblDoc.setFont(new java.awt.Font("Lucida Grande", 1, 12)); // NOI18N
+        tblDoc.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        tblDoc.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tblDocMouseClicked(evt);
+            }
+        });
+        tblDoc.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                tblDocKeyReleased(evt);
+            }
+        });
+        jScrollPane4.setViewportView(tblDoc);
+
+        jPanel12.add(jScrollPane4, new org.netbeans.lib.awtextra.AbsoluteConstraints(325, 28, 531, 207));
+
+        txtDocment.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtDocmentActionPerformed(evt);
+            }
+        });
+        jPanel12.add(txtDocment, new org.netbeans.lib.awtextra.AbsoluteConstraints(23, 28, 195, -1));
+
+        btnDocAttch.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/16_Attach.png"))); // NOI18N
+        btnDocAttch.setText("Attach");
+        btnDocAttch.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDocAttchActionPerformed(evt);
+            }
+        });
+        btnDocAttch.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                btnDocAttchKeyReleased(evt);
+            }
+        });
+        jPanel12.add(btnDocAttch, new org.netbeans.lib.awtextra.AbsoluteConstraints(224, 28, 83, -1));
+
+        btnDocAdd.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/add.png"))); // NOI18N
+        btnDocAdd.setText("Add");
+        btnDocAdd.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDocAddActionPerformed(evt);
+            }
+        });
+        jPanel12.add(btnDocAdd, new org.netbeans.lib.awtextra.AbsoluteConstraints(224, 74, 89, -1));
+
+        btnDocDelete.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/delete.png"))); // NOI18N
+        btnDocDelete.setText("Delete");
+        btnDocDelete.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDocDeleteActionPerformed(evt);
+            }
+        });
+        jPanel12.add(btnDocDelete, new org.netbeans.lib.awtextra.AbsoluteConstraints(224, 120, 89, -1));
+
+        btnDocClear.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/clear.png"))); // NOI18N
+        btnDocClear.setText("Clear");
+        btnDocClear.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDocClearActionPerformed(evt);
+            }
+        });
+        jPanel12.add(btnDocClear, new org.netbeans.lib.awtextra.AbsoluteConstraints(224, 166, 89, -1));
+
+        txtDocId.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtDocIdActionPerformed(evt);
+            }
+        });
+        jPanel12.add(txtDocId, new org.netbeans.lib.awtextra.AbsoluteConstraints(109, 74, 109, -1));
+        jPanel12.add(txtDocSdntId, new org.netbeans.lib.awtextra.AbsoluteConstraints(109, 120, 109, -1));
+        jPanel12.add(txtDocName, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 166, 109, -1));
+
+        jLabel17.setFont(new java.awt.Font("Lucida Grande", 1, 12)); // NOI18N
+        jLabel17.setText("Doc Id");
+        jPanel12.add(jLabel17, new org.netbeans.lib.awtextra.AbsoluteConstraints(63, 80, -1, -1));
+
+        jLabel18.setFont(new java.awt.Font("Lucida Grande", 1, 12)); // NOI18N
+        jLabel18.setText("Student Id");
+        jPanel12.add(jLabel18, new org.netbeans.lib.awtextra.AbsoluteConstraints(41, 126, 68, -1));
+
+        jLabel19.setFont(new java.awt.Font("Lucida Grande", 1, 12)); // NOI18N
+        jLabel19.setText("Doc Name");
+        jPanel12.add(jLabel19, new org.netbeans.lib.awtextra.AbsoluteConstraints(41, 172, -1, -1));
+
+        javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
+        jPanel5.setLayout(jPanel5Layout);
+        jPanel5Layout.setHorizontalGroup(
+            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel5Layout.createSequentialGroup()
+                .addGap(36, 36, 36)
+                .addComponent(jPanel12, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(118, Short.MAX_VALUE))
+        );
+        jPanel5Layout.setVerticalGroup(
+            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel5Layout.createSequentialGroup()
+                .addGap(51, 51, 51)
+                .addComponent(jPanel12, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(39, Short.MAX_VALUE))
+        );
+
+        jTabbedPane1.addTab("Documents", jPanel5);
+
+        jPanel6.setBackground(new java.awt.Color(204, 204, 255));
+
+        jPanel8.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        jLabel12.setBackground(new java.awt.Color(255, 0, 0));
+        jLabel12.setFont(new java.awt.Font("Lucida Grande", 1, 12)); // NOI18N
+        jLabel12.setForeground(new java.awt.Color(255, 0, 51));
+        jLabel12.setText("FROM:");
+        jPanel8.add(jLabel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(33, 25, 49, -1));
+
+        txtFromEmail.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtFromEmailActionPerformed(evt);
+            }
+        });
+        jPanel8.add(txtFromEmail, new org.netbeans.lib.awtextra.AbsoluteConstraints(129, 19, 266, -1));
+
+        jLabel13.setBackground(new java.awt.Color(255, 0, 0));
+        jLabel13.setFont(new java.awt.Font("Lucida Grande", 1, 12)); // NOI18N
+        jLabel13.setForeground(new java.awt.Color(255, 51, 51));
+        jLabel13.setText("Password: ");
+        jPanel8.add(jLabel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(33, 69, -1, -1));
+
+        jLabel14.setBackground(new java.awt.Color(255, 0, 0));
+        jLabel14.setFont(new java.awt.Font("Lucida Grande", 1, 12)); // NOI18N
+        jLabel14.setText("TO:");
+        jPanel8.add(jLabel14, new org.netbeans.lib.awtextra.AbsoluteConstraints(33, 115, -1, -1));
+
+        txtToEmail.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtToEmailActionPerformed(evt);
+            }
+        });
+        jPanel8.add(txtToEmail, new org.netbeans.lib.awtextra.AbsoluteConstraints(129, 109, 266, -1));
+
+        txtSubEmail.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtSubEmailActionPerformed(evt);
+            }
+        });
+        jPanel8.add(txtSubEmail, new org.netbeans.lib.awtextra.AbsoluteConstraints(129, 153, 266, -1));
+
+        jLabel15.setBackground(new java.awt.Color(255, 0, 0));
+        jLabel15.setFont(new java.awt.Font("Lucida Grande", 1, 12)); // NOI18N
+        jLabel15.setText("SUBJECT:");
+        jPanel8.add(jLabel15, new org.netbeans.lib.awtextra.AbsoluteConstraints(33, 159, -1, -1));
+
+        txtAreaEmail.setColumns(20);
+        txtAreaEmail.setRows(5);
+        jScrollPane3.setViewportView(txtAreaEmail);
+
+        jPanel8.add(jScrollPane3, new org.netbeans.lib.awtextra.AbsoluteConstraints(429, 19, 330, 116));
+
+        txtAttachFile.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtAttachFileActionPerformed(evt);
+            }
+        });
+        jPanel8.add(txtAttachFile, new org.netbeans.lib.awtextra.AbsoluteConstraints(429, 153, 224, -1));
+
+        btnAttch.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/16_Attach.png"))); // NOI18N
+        btnAttch.setText("Attach");
+        btnAttch.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAttchActionPerformed(evt);
+            }
+        });
+        jPanel8.add(btnAttch, new org.netbeans.lib.awtextra.AbsoluteConstraints(659, 153, 90, -1));
+
+        txtAttchName.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtAttchNameActionPerformed(evt);
+            }
+        });
+        jPanel8.add(txtAttchName, new org.netbeans.lib.awtextra.AbsoluteConstraints(429, 193, 224, -1));
+
+        jLabel16.setFont(new java.awt.Font("Apple Symbols", 1, 14)); // NOI18N
+        jLabel16.setForeground(new java.awt.Color(0, 0, 153));
+        jLabel16.setText("Attachment Name");
+        jPanel8.add(jLabel16, new org.netbeans.lib.awtextra.AbsoluteConstraints(667, 201, -1, -1));
+
+        btnSendEmail.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/16_send-mail-circle.png"))); // NOI18N
+        btnSendEmail.setText("Send Email");
+        btnSendEmail.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSendEmailActionPerformed(evt);
+            }
+        });
+        jPanel8.add(btnSendEmail, new org.netbeans.lib.awtextra.AbsoluteConstraints(429, 237, 330, 39));
+        jPanel8.add(txtPassEmail, new org.netbeans.lib.awtextra.AbsoluteConstraints(129, 63, 266, -1));
+
+        javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
+        jPanel6.setLayout(jPanel6Layout);
+        jPanel6Layout.setHorizontalGroup(
+            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel6Layout.createSequentialGroup()
+                .addGap(158, 158, 158)
+                .addComponent(jPanel8, javax.swing.GroupLayout.PREFERRED_SIZE, 777, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(75, Short.MAX_VALUE))
+        );
+        jPanel6Layout.setVerticalGroup(
+            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel6Layout.createSequentialGroup()
+                .addComponent(jPanel8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
+        );
+
+        jTabbedPane1.addTab("Email", jPanel6);
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jTabbedPane1)
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 371, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 26, Short.MAX_VALUE))
+        );
+
+        jPanel7.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        jPanel7.setForeground(new java.awt.Color(0, 51, 153));
+
+        jLabel11.setFont(new java.awt.Font("Athelas", 1, 14)); // NOI18N
+        jLabel11.setForeground(new java.awt.Color(0, 51, 153));
+        jLabel11.setText("Welcome To EasyStat System");
+
+        txtSearch.setText("Search...");
+        txtSearch.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtSearchActionPerformed(evt);
+            }
+        });
+        txtSearch.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                txtSearchKeyPressed(evt);
+            }
+        });
+
+        btnSearch.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/open.png"))); // NOI18N
+        btnSearch.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSearchActionPerformed(evt);
+            }
+        });
+
+        jPanel11.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Commands", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Arial Black", 1, 12), new java.awt.Color(0, 51, 153))); // NOI18N
+
+        btnAdd.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/add.png"))); // NOI18N
+        btnAdd.setText("Add");
+        btnAdd.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAddActionPerformed(evt);
+            }
+        });
+
+        btnEdit.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/edit.png"))); // NOI18N
+        btnEdit.setText("Edit");
+        btnEdit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEditActionPerformed(evt);
+            }
+        });
+
+        btnDelete.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/delete.png"))); // NOI18N
+        btnDelete.setText("Delete");
+        btnDelete.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDeleteActionPerformed(evt);
+            }
+        });
+
+        btnClear.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/clear.png"))); // NOI18N
+        btnClear.setText("Clear");
+        btnClear.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnClearActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel11Layout = new javax.swing.GroupLayout(jPanel11);
+        jPanel11.setLayout(jPanel11Layout);
+        jPanel11Layout.setHorizontalGroup(
+            jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel11Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addComponent(btnDelete, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnEdit, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnAdd, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnClear, javax.swing.GroupLayout.PREFERRED_SIZE, 159, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        jPanel11Layout.setVerticalGroup(
+            jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel11Layout.createSequentialGroup()
+                .addComponent(btnAdd)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(btnEdit)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(btnDelete)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(btnClear)
+                .addGap(0, 0, Short.MAX_VALUE))
+        );
+
+        javax.swing.GroupLayout jPanel7Layout = new javax.swing.GroupLayout(jPanel7);
+        jPanel7.setLayout(jPanel7Layout);
+        jPanel7Layout.setHorizontalGroup(
+            jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel7Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jPanel11, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(jPanel7Layout.createSequentialGroup()
+                        .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel7Layout.createSequentialGroup()
+                                .addComponent(txtSearch)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(btnSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jLabel11, javax.swing.GroupLayout.DEFAULT_SIZE, 185, Short.MAX_VALUE))
+                        .addContainerGap())))
+        );
+        jPanel7Layout.setVerticalGroup(
+            jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel7Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel11)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(txtSearch, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnSearch))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel11, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+
+        stdntInfoPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Student Info", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Lucida Grande", 0, 13), new java.awt.Color(51, 0, 51))); // NOI18N
+
+        jLabel1.setText("Student ID ");
+
+        txtStdntID.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtStdntIDActionPerformed(evt);
+            }
+        });
+
+        jLabel2.setText("First Name");
+
+        jLabel3.setText("Last Name");
+
+        jLabel4.setText("Department");
+
+        jLabel5.setText("Series");
+
+        txtStdntFN.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtStdntFNActionPerformed(evt);
+            }
+        });
+
+        txtStdntLN.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtStdntLNActionPerformed(evt);
+            }
+        });
+
+        txtStdntDpt.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtStdntDptActionPerformed(evt);
+            }
+        });
+
+        txtStdntSi.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtStdntSiActionPerformed(evt);
+            }
+        });
+
+        jLabel6.setText("Age");
+
+        txtStdntAge.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtStdntAgeActionPerformed(evt);
+            }
+        });
+
+        jLabel7.setText("Height");
+
+        txtStdntHeit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtStdntHeitActionPerformed(evt);
+            }
+        });
+
+        jLabel8.setText("Weight");
+
+        txtStdntWeit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtStdntWeitActionPerformed(evt);
+            }
+        });
+
+        jLabel9.setText("Gender");
+
+        jLabel10.setText("Blood");
+
+        txtStdntBld.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtStdntBldActionPerformed(evt);
+            }
+        });
+
+        comboStdntGend.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Male", "Female" }));
+
+        javax.swing.GroupLayout stdntInfoPanelLayout = new javax.swing.GroupLayout(stdntInfoPanel);
+        stdntInfoPanel.setLayout(stdntInfoPanelLayout);
+        stdntInfoPanelLayout.setHorizontalGroup(
+            stdntInfoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(stdntInfoPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(stdntInfoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(stdntInfoPanelLayout.createSequentialGroup()
+                        .addComponent(jLabel1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(txtStdntID, javax.swing.GroupLayout.DEFAULT_SIZE, 95, Short.MAX_VALUE))
+                    .addGroup(stdntInfoPanelLayout.createSequentialGroup()
+                        .addComponent(jLabel5)
+                        .addGap(43, 43, 43)
+                        .addComponent(txtStdntSi))
+                    .addGroup(stdntInfoPanelLayout.createSequentialGroup()
+                        .addComponent(jLabel4)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(txtStdntDpt))
+                    .addGroup(stdntInfoPanelLayout.createSequentialGroup()
+                        .addGroup(stdntInfoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel2)
+                            .addComponent(jLabel3))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(stdntInfoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(txtStdntLN, javax.swing.GroupLayout.DEFAULT_SIZE, 97, Short.MAX_VALUE)
+                            .addComponent(txtStdntFN))))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(stdntInfoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(stdntInfoPanelLayout.createSequentialGroup()
+                        .addGroup(stdntInfoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel7)
+                            .addComponent(jLabel8)
+                            .addComponent(jLabel6))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(stdntInfoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(txtStdntAge, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(stdntInfoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addComponent(txtStdntHeit, javax.swing.GroupLayout.DEFAULT_SIZE, 111, Short.MAX_VALUE)
+                                .addComponent(txtStdntWeit))))
+                    .addGroup(stdntInfoPanelLayout.createSequentialGroup()
+                        .addGroup(stdntInfoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel9)
+                            .addComponent(jLabel10))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(stdntInfoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(txtStdntBld)
+                            .addComponent(comboStdntGend, 0, 109, Short.MAX_VALUE))))
+                .addGap(21, 21, 21))
+        );
+        stdntInfoPanelLayout.setVerticalGroup(
+            stdntInfoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(stdntInfoPanelLayout.createSequentialGroup()
+                .addGap(22, 22, 22)
+                .addGroup(stdntInfoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(stdntInfoPanelLayout.createSequentialGroup()
+                        .addGroup(stdntInfoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel6)
+                            .addComponent(txtStdntAge, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(stdntInfoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel7)
+                            .addComponent(txtStdntHeit, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(14, 14, 14)
+                        .addGroup(stdntInfoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel8)
+                            .addComponent(txtStdntWeit, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, 18)
+                        .addGroup(stdntInfoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel9)
+                            .addComponent(comboStdntGend, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, 18)
+                        .addGroup(stdntInfoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel10)
+                            .addComponent(txtStdntBld, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(stdntInfoPanelLayout.createSequentialGroup()
+                        .addGroup(stdntInfoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel1)
+                            .addComponent(txtStdntID, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(stdntInfoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel2)
+                            .addComponent(txtStdntFN, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(14, 14, 14)
+                        .addGroup(stdntInfoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel3)
+                            .addComponent(txtStdntLN, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, 18)
+                        .addGroup(stdntInfoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel4)
+                            .addComponent(txtStdntDpt, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, 18)
+                        .addGroup(stdntInfoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel5)
+                            .addComponent(txtStdntSi, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addGap(0, 0, Short.MAX_VALUE))
+        );
+
+        jPanel9.setBackground(new java.awt.Color(153, 153, 255));
+        jPanel9.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+
+        tblStdntHrInfor.setFont(new java.awt.Font("Lucida Grande", 1, 12)); // NOI18N
+        tblStdntHrInfor.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        tblStdntHrInfor.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tblStdntHrInforMouseClicked(evt);
+            }
+        });
+        tblStdntHrInfor.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                tblStdntHrInforKeyReleased(evt);
+            }
+        });
+        jScrollPane2.setViewportView(tblStdntHrInfor);
+
+        javax.swing.GroupLayout jPanel9Layout = new javax.swing.GroupLayout(jPanel9);
+        jPanel9.setLayout(jPanel9Layout);
+        jPanel9Layout.setHorizontalGroup(
+            jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel9Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 201, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+        jPanel9Layout.setVerticalGroup(
+            jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel9Layout.createSequentialGroup()
+                .addGap(15, 15, 15)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 227, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        jPanel10.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+
+        txtImageUpload.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtImageUploadActionPerformed(evt);
+            }
+        });
+
+        btnImageUpload.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/upload.png"))); // NOI18N
+        btnImageUpload.setText("Upload");
+        btnImageUpload.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnImageUploadActionPerformed(evt);
+            }
+        });
+
+        btnSaveUpload.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/image_Save.png"))); // NOI18N
+        btnSaveUpload.setText("Save");
+        btnSaveUpload.setToolTipText("");
+        btnSaveUpload.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSaveUploadActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel10Layout = new javax.swing.GroupLayout(jPanel10);
+        jPanel10.setLayout(jPanel10Layout);
+        jPanel10Layout.setHorizontalGroup(
+            jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel10Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(labelImage, javax.swing.GroupLayout.PREFERRED_SIZE, 186, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(17, 17, 17))
+            .addGroup(jPanel10Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(btnSaveUpload, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(jPanel10Layout.createSequentialGroup()
+                        .addComponent(txtImageUpload, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnImageUpload, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap())
+        );
+        jPanel10Layout.setVerticalGroup(
+            jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel10Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(labelImage, javax.swing.GroupLayout.PREFERRED_SIZE, 156, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(txtImageUpload, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnImageUpload))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(btnSaveUpload)
+                .addGap(16, 16, 16))
+        );
+
+        jMenu1.setText("File");
+
+        mItClose.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_C, java.awt.event.InputEvent.ALT_MASK | java.awt.event.InputEvent.CTRL_MASK));
+        mItClose.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/close.png"))); // NOI18N
+        mItClose.setText("Close");
+        mItClose.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mItCloseActionPerformed(evt);
+            }
+        });
+        jMenu1.add(mItClose);
+
+        exit.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_C, java.awt.event.InputEvent.CTRL_MASK));
+        exit.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/exit.png"))); // NOI18N
+        exit.setText("Exit");
+        exit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                exitActionPerformed(evt);
+            }
+        });
+        jMenu1.add(exit);
+
+        jMenuBar1.add(jMenu1);
+
+        panelStdnInfo.setText("Edit");
+
+        jMenuItem2.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.CTRL_MASK));
+        jMenuItem2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/snip.png"))); // NOI18N
+        jMenuItem2.setText("Snapshot");
+        jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem2ActionPerformed(evt);
+            }
+        });
+        panelStdnInfo.add(jMenuItem2);
+
+        jMenuBar1.add(panelStdnInfo);
+
+        jMenu3.setText("Help");
+
+        itemHelp.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_H, java.awt.event.InputEvent.CTRL_MASK));
+        itemHelp.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/help.png"))); // NOI18N
+        itemHelp.setText("Offline Help");
+        itemHelp.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                itemHelpActionPerformed(evt);
+            }
+        });
+        jMenu3.add(itemHelp);
+
+        itemWebHelp.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_J, java.awt.event.InputEvent.CTRL_MASK));
+        itemWebHelp.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/Web_Help.png"))); // NOI18N
+        itemWebHelp.setText("Web Help");
+        itemWebHelp.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                itemWebHelpActionPerformed(evt);
+            }
+        });
+        jMenu3.add(itemWebHelp);
+
+        jMenuBar1.add(jMenu3);
+
+        jMenu4.setText("About");
+        jMenuBar1.add(jMenu4);
+
+        menuDate.setForeground(new java.awt.Color(255, 51, 51));
+        menuDate.setText("Date");
+        jMenuBar1.add(menuDate);
+
+        menuTime.setForeground(new java.awt.Color(0, 0, 153));
+        menuTime.setText("Time");
+        jMenuBar1.add(menuTime);
+
+        setJMenuBar(jMenuBar1);
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(stdntInfoPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 368, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel10, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(stdntInfoPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel10, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(26, 26, 26))
+        );
+
+        pack();
+    }// </editor-fold>//GEN-END:initComponents
+
+    private void mItCloseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mItCloseActionPerformed
+        
+        try {
+            close();
+            LogIn obj = new LogIn();
+            obj.setVisible(true);
+            
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(rootPane, e);
+        }finally{
+            try {
+                resultSet.close();
+                pst.close();
+                connection.close();
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(rootPane, e); 
+            }
+            
+        }
+    }//GEN-LAST:event_mItCloseActionPerformed
+
+    private void exitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitActionPerformed
+        System.exit(0);
+    }//GEN-LAST:event_exitActionPerformed
+
+    private void signOutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_signOutActionPerformed
+        try {
+            close();
+            LogIn obj = new LogIn();
+            obj.setVisible(true);
+            
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(rootPane, e);
+        }finally{
+            try {
+                //resultSet.close();
+                //pst.close();
+                connection.close();
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(rootPane, e); 
+            }
+            
+        }
+    }//GEN-LAST:event_signOutActionPerformed
+
+    private void txtStdntIDActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtStdntIDActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtStdntIDActionPerformed
+
+    private void txtStdntFNActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtStdntFNActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtStdntFNActionPerformed
+
+    private void txtStdntLNActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtStdntLNActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtStdntLNActionPerformed
+
+    private void txtStdntDptActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtStdntDptActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtStdntDptActionPerformed
+
+    private void txtStdntSiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtStdntSiActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtStdntSiActionPerformed
+
+    private void txtStdntAgeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtStdntAgeActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtStdntAgeActionPerformed
+
+    private void txtStdntHeitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtStdntHeitActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtStdntHeitActionPerformed
+
+    private void txtStdntWeitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtStdntWeitActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtStdntWeitActionPerformed
+
+    private void txtStdntBldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtStdntBldActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtStdntBldActionPerformed
+
+    private void tblStdntHrInforMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblStdntHrInforMouseClicked
+        try {
+            int row = tblStdntHrInfor.getSelectedRow();
+            String tableClick = (tblStdntHrInfor.getModel().getValueAt(row, 0).toString());
+            String sql = "select * from Student_Info where Student_id= '"+tableClick+"'";
+            pst = connection.prepareStatement(sql);
+            resultSet = pst.executeQuery();
+            if(resultSet.next()){
+                getValue();
+            }
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(rootPane, ex);
+        }
+        
+        
+    }//GEN-LAST:event_tblStdntHrInforMouseClicked
+
+    private void tblStdntHrInforKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tblStdntHrInforKeyReleased
+        if (evt.getKeyCode() == KeyEvent.VK_UP || evt.getKeyCode() == KeyEvent.VK_DOWN) {
+            try {
+                int row = tblStdntHrInfor.getSelectedRow();
+                String tableClick = (tblStdntHrInfor.getModel().getValueAt(row, 0).toString());
+                String sql = "select * from Student_Info where Student_id= '" + tableClick + "'";
+                pst = connection.prepareStatement(sql);
+                resultSet = pst.executeQuery();
+                if (resultSet.next()) {
+                    getValue();
+                }
+            } catch (SQLException ex) {
+                JOptionPane.showMessageDialog(rootPane, ex);
+            }
+        }
+    }//GEN-LAST:event_tblStdntHrInforKeyReleased
+
+    private void tblStudentInfoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblStudentInfoMouseClicked
+        try {
+            int row = tblStudentInfo.getSelectedRow();
+            String tableClick = (tblStudentInfo.getModel().getValueAt(row, 0).toString());
+            String sql = "select * from Student_Info where Student_id= '"+tableClick+"'";
+            pst = connection.prepareStatement(sql);
+            resultSet = pst.executeQuery();
+            if(resultSet.next()){
+                getValue();
+            }
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(rootPane, ex);
+        }
+    }//GEN-LAST:event_tblStudentInfoMouseClicked
+
+    private void tblStudentInfoKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tblStudentInfoKeyReleased
+        if (evt.getKeyCode() == KeyEvent.VK_UP || evt.getKeyCode() == KeyEvent.VK_DOWN) {
+            try {
+                int row = tblStudentInfo.getSelectedRow();
+                String tableClick = (tblStudentInfo.getModel().getValueAt(row, 0).toString());
+                String sql = "select * from Student_Info where Student_id= '" + tableClick + "'";
+                pst = connection.prepareStatement(sql);
+                resultSet = pst.executeQuery();
+                if (resultSet.next()) {
+                    getValue();
+                }
+            } catch (SQLException ex) {
+                JOptionPane.showMessageDialog(rootPane, ex);
+            }
+        }
+    }//GEN-LAST:event_tblStudentInfoKeyReleased
+
+    private void itemHelpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_itemHelpActionPerformed
+        openFile();
+    }//GEN-LAST:event_itemHelpActionPerformed
+
+    private void btnHelp1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnHelp1ActionPerformed
+        openFile();
+    }//GEN-LAST:event_btnHelp1ActionPerformed
+
+    private void itemWebHelpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_itemWebHelpActionPerformed
+        try {
+            String url = "https://support.apple.com/en-ca";
+            java.awt.Desktop.getDesktop().browse(java.net.URI.create(url));
+        } catch (IOException ex) {
+            JOptionPane.showMessageDialog(rootPane, ex);
+        }
+    }//GEN-LAST:event_itemWebHelpActionPerformed
+
+    private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddActionPerformed
+        String sql = "insert into Student_Info(Student_id, First_name, Last_name, Department,"
+                    + "Series, Age, Height, Weight,Gender, Blood) values(?,?,?,?,?,?,?,?,?,?)";
+        try {
+            pst = connection.prepareStatement(sql);
+            pst.setString(1, txtStdntID.getText());
+            pst.setString(2, txtStdntFN.getText());
+            pst.setString(3, txtStdntLN.getText());
+            pst.setString(4, txtStdntDpt.getText());
+            pst.setString(5, txtStdntSi.getText());
+            pst.setString(6, txtStdntAge.getText());
+            pst.setString(7, txtStdntHeit.getText());
+            pst.setString(8, txtStdntWeit.getText());
+            pst.setString(9, (String) comboStdntGend.getSelectedItem());
+            pst.setString(10, txtStdntBld.getText());
+            
+            pst.execute();
+            JOptionPane.showMessageDialog(rootPane, "Saved Successfully");
+            
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(rootPane, "Error On Save");
+        }
+        
+        updateStdntHrtInfo();
+        updateStudentInfoTbl();
+    }//GEN-LAST:event_btnAddActionPerformed
+
+    
+    
+    private void txtSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtSearchActionPerformed
+        
+    }//GEN-LAST:event_txtSearchActionPerformed
+
+    private void btnClearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnClearActionPerformed
+        txtStdntID.setText(null);
+        txtStdntFN.setText(null);
+        txtStdntLN.setText(null);
+        txtStdntDpt.setText(null);
+        txtStdntSi.setText(null);
+        txtStdntAge.setText(null);
+        txtStdntHeit.setText(null);
+        txtStdntWeit.setText(null);
+        comboStdntGend.setSelectedItem("Male");
+        txtStdntBld.setText(null);
+    }//GEN-LAST:event_btnClearActionPerformed
+
+    private void txtSearchKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtSearchKeyPressed
+        String sql = "select * from Student_Info where First_name=?";
+        try {
+            pst = connection.prepareStatement(sql);
+            pst.setString(1, txtSearch.getText());
+            resultSet = pst.executeQuery();
+            if(resultSet.next()){
+                getValue();
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(rootPane, e);
+        }
+        
+        String sql1 = "select * from Student_Info where Student_id=?";
+        try {
+            pst = connection.prepareStatement(sql1);
+            pst.setString(1, txtSearch.getText());
+            resultSet = pst.executeQuery();
+            if(resultSet.next()){
+                getValue();
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(rootPane, e);
+        }
+    }//GEN-LAST:event_txtSearchKeyPressed
+
+    private void btnSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchActionPerformed
+        // TODO add your handling code here:
+        openFile();
+    }//GEN-LAST:event_btnSearchActionPerformed
+
+    private void btnEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditActionPerformed
+        String sql = "update Student_Info set First_name=?, Last_name=?, Department=?,"
+                    + "Series=?, Age=?, Height=?, Weight=?,Gender=?, Blood=? where Student_id=?";
+        try {
+            pst = connection.prepareStatement(sql);
+            pst.setString(1, txtStdntFN.getText());
+            pst.setString(2, txtStdntLN.getText());
+            pst.setString(3, txtStdntDpt.getText());
+            pst.setString(4, txtStdntSi.getText());
+            pst.setString(5, txtStdntAge.getText());
+            pst.setString(6, txtStdntHeit.getText());
+            pst.setString(7, txtStdntWeit.getText());
+            pst.setString(8, (String) comboStdntGend.getSelectedItem());
+            pst.setString(9, txtStdntBld.getText());
+            pst.setString(10, txtStdntID.getText());
+            pst.execute();
+            JOptionPane.showMessageDialog(rootPane, "Updated Successfully");
+            
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(rootPane, e);
+        }
+        
+        updateStdntHrtInfo();
+        updateStudentInfoTbl();
+    }//GEN-LAST:event_btnEditActionPerformed
+
+    private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
+        int p = JOptionPane.showConfirmDialog(rootPane, "Do you want to proceed to delete?","Delete",JOptionPane.YES_NO_OPTION);
+        if(p==0){
+            String sql = "delete from Student_Info where Student_id=?";
+            try {
+                pst = connection.prepareStatement(sql);
+                pst.setString(1, txtStdntID.getText());
+                pst.execute();
+                
+                JOptionPane.showMessageDialog(rootPane, "Deleted");
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(rootPane, e);
+            }
+            updateStdntHrtInfo();
+            updateStudentInfoTbl();
+        }
+        
+    }//GEN-LAST:event_btnDeleteActionPerformed
+
+    private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
+        try {
+            saveScreenShot(stdntInfoPanel, "Panel_Image.png");
+            JOptionPane.showMessageDialog(rootPane, "Image is Captured");
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(rootPane, e);
+        }
+    }//GEN-LAST:event_jMenuItem2ActionPerformed
+
+    private void txtImageUploadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtImageUploadActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtImageUploadActionPerformed
+
+    private void btnImageUploadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnImageUploadActionPerformed
+        JFileChooser chooser = new JFileChooser();
+        chooser.showOpenDialog(null);
+        
+        File f = chooser.getSelectedFile();
+        String fileName = f.getAbsolutePath();
+        txtImageUpload.setText(fileName);
+        
+        //convert file to binary stream
+        try {
+            FileInputStream fIS = new FileInputStream(f);
+            ByteArrayOutputStream bAOS = new ByteArrayOutputStream();
+            byte[] buf = new byte[1024];
+            for(int readNum; (readNum=fIS.read(buf))!=-1;){
+                bAOS.write(buf,0,readNum);
+            }
+            personImg = bAOS.toByteArray();
+            
+        } catch (Exception e) {
+        }
+    }//GEN-LAST:event_btnImageUploadActionPerformed
+
+    private void btnSaveUploadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveUploadActionPerformed
+        String sql = "update Student_Info set Photo = ? where Student_id = ?";
+        try {
+            pst = connection.prepareStatement(sql);
+            pst.setBytes(1,personImg);
+            pst.setString(2, txtStdntID.getText());
+            pst.execute();
+            JOptionPane.showMessageDialog(rootPane, "Image is saved successfully");
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(rootPane, e);
+        }     
+    }//GEN-LAST:event_btnSaveUploadActionPerformed
+
+    private void txtFromEmailActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtFromEmailActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtFromEmailActionPerformed
+
+    private void txtToEmailActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtToEmailActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtToEmailActionPerformed
+
+    private void txtSubEmailActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtSubEmailActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtSubEmailActionPerformed
+
+    private void txtAttachFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtAttachFileActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtAttachFileActionPerformed
+
+    private void txtAttchNameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtAttchNameActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtAttchNameActionPerformed
+
+    private void btnSendEmailActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSendEmailActionPerformed
+        final String from = txtFromEmail.getText();
+        final String password = txtPassEmail.getText();
+        
+        String to = txtToEmail.getText();
+        String subject = txtSubEmail.getText();
+        String txtMessage = txtAreaEmail.getText();
+        
+        System.out.println("Creating Property...");
+        Properties pros = new Properties();
+        pros.put("mail.smtp.host", "smtp.gmail.com");
+        pros.put("mail.smtp.socketFactory.port", "465");//SSL protocol port# 465
+        pros.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+        pros.put("mail.smtp.auth","true"); //Authentication
+        pros.put("mail.smtp.port","465");
+        
+        //Create a session
+        System.out.println("Creating seesion...");
+        Session session = Session.getDefaultInstance(pros,
+                new javax.mail.Authenticator(){
+                    @Override
+                    protected PasswordAuthentication getPasswordAuthentication(){
+                        return new PasswordAuthentication(from,password);                
+                    }
+                }
+        );
+        try {
+            //message header
+            System.out.println("Creating MimeMessage...");
+            Message message = new MimeMessage(session);
+            message.setFrom(new InternetAddress(from));
+            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(to));
+            message.setSubject(subject);
+            
+            //code for set the text message
+            System.out.println("Creating text message...");
+            MimeBodyPart messageBodyPart = new MimeBodyPart();
+            messageBodyPart.setText(txtMessage);
+            Multipart multipart = new MimeMultipart();
+            multipart.addBodyPart(messageBodyPart);
+            
+            //code for attach file
+            System.out.println("attaching file...");
+            messageBodyPart = new MimeBodyPart();
+            DataSource source = new FileDataSource(filePath);
+            messageBodyPart.setDataHandler(new DataHandler(source));
+            messageBodyPart.setFileName(txtAttchName.getText());
+            multipart.addBodyPart(messageBodyPart);
+            
+            message.setContent(multipart);
+            Transport.send(message);
+            
+            JOptionPane.showMessageDialog(rootPane, "Message Send");
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(rootPane, e);
+        }
+    }//GEN-LAST:event_btnSendEmailActionPerformed
+
+    private void btnAttchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAttchActionPerformed
+
+        JFileChooser chooser = new JFileChooser();
+        chooser.showOpenDialog(rootPane);
+
+        File f = chooser.getSelectedFile();
+        filePath = f.getAbsolutePath();
+        txtAttachFile.setText(filePath);
+        txtAttchName.setText(filePath);
+    }//GEN-LAST:event_btnAttchActionPerformed
+
+    private void tblDocMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblDocMouseClicked
+        try {
+            int row = tblDoc.getSelectedRow();
+            String tableClick = (tblDoc.getModel().getValueAt(row, 0).toString());
+            String sql = "select * from Doc_table where Doc_id= '"+tableClick+"'";
+            pst = connection.prepareStatement(sql);
+            resultSet = pst.executeQuery();
+            if(resultSet.next()){
+                txtDocId.setText(resultSet.getString("Doc_id"));
+                txtDocSdntId.setText(resultSet.getString("Student_id"));
+                txtDocName.setText(resultSet.getString("Doc_name"));
+                txtDocment.setText(resultSet.getString("Path"));
+                
+                String path = txtDocment.getText();
+                try {
+                    Runtime.getRuntime().exec(new String[]{"/usr/bin/open",path});
+                } catch (IOException ex) {
+                    JOptionPane.showMessageDialog(rootPane, ex);
+                }
+                
+            }
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(rootPane, ex);
+        }
+    }//GEN-LAST:event_tblDocMouseClicked
+
+    private void tblDocKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tblDocKeyReleased
+        // TODO add your handling code here:
+    }//GEN-LAST:event_tblDocKeyReleased
+
+    private void btnDocAttchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDocAttchActionPerformed
+        JFileChooser chooser = new JFileChooser();
+        chooser.showOpenDialog(rootPane);
+        
+        File f = chooser.getSelectedFile();
+        String fileDocPath = f.getAbsolutePath();
+        txtDocment.setText(fileDocPath);
+        
+       
+    }//GEN-LAST:event_btnDocAttchActionPerformed
+
+    private void txtDocmentActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtDocmentActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtDocmentActionPerformed
+
+    private void txtDocIdActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtDocIdActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtDocIdActionPerformed
+
+    private void btnDocAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDocAddActionPerformed
+        String sql = "insert into Doc_table(Doc_id, Student_id, Doc_name, Path) values(?,?,?,?)";
+        try {
+            pst = connection.prepareStatement(sql);
+            pst.setString(1, txtDocId.getText());
+            pst.setString(2, txtDocSdntId.getText());
+            pst.setString(3, txtDocName.getText());
+            pst.setString(4, txtDocment.getText());
+
+            
+            pst.execute();
+            JOptionPane.showMessageDialog(rootPane, "Saved Successfully");
+            
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(rootPane, e);
+        }
+        
+        updateDoc();
+    }//GEN-LAST:event_btnDocAddActionPerformed
+
+    private void btnDocDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDocDeleteActionPerformed
+        int p = JOptionPane.showConfirmDialog(rootPane, "Do you want to proceed to delete?","Delete",JOptionPane.YES_NO_OPTION);
+        if(p==0){
+            String sql = "delete from Doc_table where Doc_id=?";
+            try {
+                pst = connection.prepareStatement(sql);
+                pst.setString(1, txtDocId.getText());
+                pst.execute();
+                
+                JOptionPane.showMessageDialog(rootPane, "Deleted");
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(rootPane, e);
+            }
+            updateDoc();
+        }
+    }//GEN-LAST:event_btnDocDeleteActionPerformed
+
+    private void btnDocClearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDocClearActionPerformed
+        txtDocId.setText(null);
+        txtDocName.setText(null);
+        txtDocSdntId.setText(null);
+        txtDocment.setText(null);
+    }//GEN-LAST:event_btnDocClearActionPerformed
+
+    private void btnDocAttchKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_btnDocAttchKeyReleased
+
+    }//GEN-LAST:event_btnDocAttchKeyReleased
+    
+    //get screenshot of selected components
+    private static BufferedImage getScreenShot(Component com){
+        BufferedImage image = new BufferedImage(com.getWidth(), com.getHeight(), BufferedImage.TYPE_INT_RGB);
+        com.paint(image.getGraphics());
+        return image;
+    }
+    
+    //save screenshot of selected components
+    private static void saveScreenShot(Component com, String fileName) throws Exception{
+        BufferedImage img = getScreenShot(com);
+        ImageIO.write(img, "png", new File(fileName));
+    }
+    
+    private Image scaledImage(byte[] img,int w, int h){
+        BufferedImage resizedImage = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
+        try {
+            Graphics2D g2 = resizedImage.createGraphics();
+            g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION,RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+            
+            //convert byte array back to buffered image
+            ByteArrayInputStream in = new ByteArrayInputStream(img);
+            BufferedImage bImageFromConvert = ImageIO.read(in);
+            
+            g2.drawImage(bImageFromConvert,0,0,w,h,null);
+            g2.dispose();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(rootPane, e);
+        }
+        return resizedImage;
+    
+    }
+    
+    private void currentDate(){
+        //Static date and time
+        Calendar cal = new GregorianCalendar();
+        int second = cal.get(Calendar.SECOND);
+        int minute = cal.get(Calendar.MINUTE);
+        int hour = cal.get(Calendar.HOUR_OF_DAY);
+        int day = cal.get(Calendar.DAY_OF_MONTH);
+        int month = cal.get(Calendar.MONTH);
+        int year = cal.get(Calendar.YEAR);
+        menuTime.setText("Time:"+hour+":"+minute+":"+second);
+        menuTime.setForeground(Color.BLUE);
+        menuDate.setText("Date:"+day+"/"+(month+1)+"/"+year);
+        menuDate.setForeground(Color.RED);
+    }
+    
+    private void openFile(){
+        File f=null;
+        String path="";
+        boolean bool =false;
+        try {
+//            Runtime.getRuntime().exec("rundll32 url.dll,FileProtocolHandler" + "/Users/paulwu/Documents/Netbean/Files/Angular-JS.pdf");
+//            Runtime.getRuntime().exec("/usr/bin/open",/Users/paulwu/Documents/Netbean/Files/Angular-JS.pdf);
+            f = new File("../Files/Angular-JS.pdf");
+         
+         // returns true if the file exists
+            bool = f.exists();
+         
+         // if file exists
+         if(bool)
+         {
+            // get absolute path
+            path = f.getAbsolutePath();
+            Runtime.getRuntime().exec(new String[]{"/usr/bin/open",path});
+            // prints
+//            JOptionPane.showMessageDialog(rootPane,"Absolute Pathname "+ path);
+         }
+            
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(rootPane, "Error opening file");
+        }
+    }
+    
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String args[]) {
+        /* Set the Nimbus look and feel */
+        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         */
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Windows".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(EasyStatMain.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(EasyStatMain.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(EasyStatMain.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(EasyStatMain.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        //</editor-fold>
+
+        /* Create and display the form */
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                new EasyStatMain().setVisible(true);
+            }
+        });
+    }
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnAdd;
+    private javax.swing.JButton btnAttch;
+    private javax.swing.JButton btnClear;
+    private javax.swing.JButton btnDelete;
+    private javax.swing.JButton btnDocAdd;
+    private javax.swing.JButton btnDocAttch;
+    private javax.swing.JButton btnDocClear;
+    private javax.swing.JButton btnDocDelete;
+    private javax.swing.JButton btnEdit;
+    private javax.swing.JButton btnHelp1;
+    private javax.swing.JButton btnImageUpload;
+    private javax.swing.JButton btnSaveUpload;
+    private javax.swing.JButton btnSearch;
+    private javax.swing.JButton btnSendEmail;
+    private javax.swing.JComboBox<String> comboStdntGend;
+    private javax.swing.JMenuItem exit;
+    private javax.swing.JMenuItem itemHelp;
+    private javax.swing.JMenuItem itemWebHelp;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel11;
+    private javax.swing.JLabel jLabel12;
+    private javax.swing.JLabel jLabel13;
+    private javax.swing.JLabel jLabel14;
+    private javax.swing.JLabel jLabel15;
+    private javax.swing.JLabel jLabel16;
+    private javax.swing.JLabel jLabel17;
+    private javax.swing.JLabel jLabel18;
+    private javax.swing.JLabel jLabel19;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
+    private javax.swing.JMenu jMenu1;
+    private javax.swing.JMenu jMenu3;
+    private javax.swing.JMenu jMenu4;
+    private javax.swing.JMenuBar jMenuBar1;
+    private javax.swing.JMenuItem jMenuItem1;
+    private javax.swing.JMenuItem jMenuItem2;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel10;
+    private javax.swing.JPanel jPanel11;
+    private javax.swing.JPanel jPanel12;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
+    private javax.swing.JPanel jPanel4;
+    private javax.swing.JPanel jPanel5;
+    private javax.swing.JPanel jPanel6;
+    private javax.swing.JPanel jPanel7;
+    private javax.swing.JPanel jPanel8;
+    private javax.swing.JPanel jPanel9;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JScrollPane jScrollPane4;
+    private javax.swing.JTabbedPane jTabbedPane1;
+    private javax.swing.JToolBar jToolBar1;
+    private javax.swing.JLabel labelImage;
+    private javax.swing.JMenuItem mItClose;
+    private javax.swing.JMenu menuDate;
+    private javax.swing.JMenu menuTime;
+    private javax.swing.JMenu panelStdnInfo;
+    private javax.swing.JButton signOut;
+    private javax.swing.JPanel stdntInfoPanel;
+    private javax.swing.JTable tblDoc;
+    private javax.swing.JTable tblStdntHrInfor;
+    private javax.swing.JTable tblStudentInfo;
+    private javax.swing.JTextArea txtAreaEmail;
+    private javax.swing.JTextField txtAttachFile;
+    private javax.swing.JTextField txtAttchName;
+    private javax.swing.JTextField txtDocId;
+    private javax.swing.JTextField txtDocName;
+    private javax.swing.JTextField txtDocSdntId;
+    private javax.swing.JTextField txtDocment;
+    private javax.swing.JTextField txtFromEmail;
+    private javax.swing.JTextField txtImageUpload;
+    private javax.swing.JPasswordField txtPassEmail;
+    private javax.swing.JTextField txtSearch;
+    private javax.swing.JTextField txtStdntAge;
+    private javax.swing.JTextField txtStdntBld;
+    private javax.swing.JTextField txtStdntDpt;
+    private javax.swing.JTextField txtStdntFN;
+    private javax.swing.JTextField txtStdntHeit;
+    private javax.swing.JTextField txtStdntID;
+    private javax.swing.JTextField txtStdntLN;
+    private javax.swing.JTextField txtStdntSi;
+    private javax.swing.JTextField txtStdntWeit;
+    private javax.swing.JTextField txtSubEmail;
+    private javax.swing.JTextField txtToEmail;
+    // End of variables declaration//GEN-END:variables
+}
